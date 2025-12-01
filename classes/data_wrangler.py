@@ -35,12 +35,12 @@ class Data_Wrangler:
         
         """
         self.path = path
-        self.is_data_unpacked = 0
-        self.structure = None
-        self.keys = None
-        self.tables = None
-        self.num_entries = None
-        self.scraped_data = None
+        self._is_data_unpacked = 0
+        self._structure = None
+        self._keys = None
+        self._tables = None
+        self._num_entries = None
+        self._scraped_data = None
 
     @property
     def path(self) -> str:
@@ -53,6 +53,91 @@ class Data_Wrangler:
             self._path = path
         else:
             raise TypeError('The path param must be a str.')
+        
+    @property
+    def is_data_unpacked(self) -> int:
+        """Flag indicating whether JSON data has been unpacked."""
+        return self._is_data_unpacked
+    
+    @is_data_unpacked.setter
+    def path(self, flag: int) -> None:
+        if isinstance(flag, int):
+            if flag == 0 or flag == 1:
+                self._is_data_unpacked = flag
+        else:
+            raise TypeError('The flag param must be an int and 0 or 1.')
+        
+    @property
+    def structure(self) -> list[str]:
+        """Description of the structure of the unpacked JSON data."""
+        return self._structure
+    
+    @structure.setter
+    def structure(self, structure: list[str]) -> None:
+        if isinstance(structure, list):            
+            for item in structure:
+                if not isinstance(item, str):
+                    raise TypeError('Each item in structure must be a str.')  
+            self._structure = structure
+        else:
+            raise TypeError('The structure param must be a list.')
+        
+    @property
+    def keys(self) -> list[str]:
+        """Keys of the dictionary holding the unpacked JSON data."""
+        return self._keys
+    
+    @keys.setter
+    def keys(self, keys: list[str]) -> None:
+        if isinstance(keys, list):            
+            for item in keys:
+                if not isinstance(item, str):
+                    raise TypeError('Each item in keys must be a str.')  
+            self._keys = keys
+        else:
+            raise TypeError('The keys param must be a list.')
+        
+    @property
+    def tables(self) -> list[pd.DataFrame]:
+        """Values (tables) of the dictionary holding the unpacked JSON data."""
+        return self._keys
+    
+    @tables.setter
+    def tables(self, tables: list[pd.DataFrame]) -> None:
+        if isinstance(tables, list):            
+            for item in tables:
+                if not isinstance(item, pd.DataFrame):
+                    raise TypeError('Each item in tables must be a pd.DataFrame.')  
+            self._tables = tables
+        else:
+            raise TypeError('The tables param must be a list.')
+        
+    @property
+    def num_entries(self) -> int:
+        """Number of entries in the dictionary holding the unpacked JSON data."""
+        return self._num_entries
+    
+    @num_entries.setter
+    def num_entries(self, num_entries: int) -> None:
+        if isinstance(num_entries, str):
+            self._num_entries = num_entries
+        else:
+            raise TypeError('The num_entries param must be a int.')
+        
+    @property
+    def scraped_data(self) -> dict[str, pd.DataFrame]:
+        """Scraped unpacked JSON data."""
+        return self._scraped_data
+    
+    @scraped_data.setter
+    def scraped_data(self, scraped_data: dict[str, pd.DataFrame]) -> None:
+        if isinstance(scraped_data, dict):            
+            for item in tables:
+                if not isinstance(item, pd.DataFrame):
+                    raise TypeError('Each item in tables must be a pd.DataFrame.')  
+            self._scraped_data = scraped_data
+        else:
+            raise TypeError('The scraped_data param must be a dict.')
         
     def _read_file(self) -> pd.DataFrame:
         """
