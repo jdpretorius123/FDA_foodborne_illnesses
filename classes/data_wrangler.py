@@ -132,7 +132,7 @@ class Data_Wrangler:
     @scraped_data.setter
     def scraped_data(self, scraped_data: dict[str, pd.DataFrame]) -> None:
         if isinstance(scraped_data, dict):            
-            for item in tables:
+            for item in scraped_data:
                 if not isinstance(item, pd.DataFrame):
                     raise TypeError('Each item in tables must be a pd.DataFrame.')  
             self._scraped_data = scraped_data
