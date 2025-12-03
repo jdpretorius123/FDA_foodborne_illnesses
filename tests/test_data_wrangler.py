@@ -41,15 +41,27 @@ Functions
     test_unpack_data() -> None:
         Test Data_Wrangler's ability to unpack and restructure the
         JSON data.
+
+    test_metadata() -> None:
+        Test Data_Wrangler's ability to print metadata after the data
+        has been unpacked.
 """
 
 # Loading dependencies
+
+# Importing the Data_Wrangler class
 from calendar import day_abbr
 import sys
 sys.path.append('./')
 from classes.data_wrangler import Data_Wrangler
 
+# pandas is needed for type checking
 import pandas as pd
+
+# io and contextlib allow print information to be checked 
+import io
+from io import StringIO
+from contextlib import redirect_stdout
 
 def test_path() -> None:
     """
@@ -240,5 +252,89 @@ def test_read_file() -> None:
     # Testing the validity of the column names
     for idx in range(len(true_colnames)):
         assert colnames[idx] == true_colnames[idx]
+
+def test_metadata() -> None:
+    """
+    Test metadata.
+
+    Test Data_Wrangler's ability to print correct metadata after the
+    data has been unpacked.
+    """
+    # Defining the path to the data
+    path: str = './data/fda_investigations_data.json'
+
+    # Creating an instance of the Data_Wrangler class
+    data_wrangler: Data_Wrangler = Data_Wrangler(path = path)
+    
+    # Unpacking the data
+    data_wrangler.unpack_data()
+
+    # Initializing StringIO to catch print statements
+    f: io.StringIO = io.StringIO()
+    with redirect_stdout(f):
+        data_wrangler.metadata()
+
+    # Getting the printed output when the data has been unpacked
+    output: str = f.getvalue()
+
+    # Defining the expected output
+    expected_output: str = """
+    The attributes of the unnested data include:
+    structure
+    keys
+    tables
+    num_entires
+    scraped_data
+
+    The scraped data is structured as a dictionary
+    (dict[str, pd.DataFrame]) with 7 entries. Each
+    entry key is a table name as a string and each
+    value is the table data as a pd.DataFrame.
+
+    Keys:
+    Active Investigations
+    Closed Investigations 2025
+    Closed Investigations 2024
+    Closed Investigations 2023
+    Closed Investigations 2022
+    Closed Investigations 2021
+    Closed Investigations 2020
+
+    Number of entries: 7
+
+    Here is the first table:
+    Columns:
+    DatePosted
+    Reference#
+    PathogenorCause ofIllness
+    Product(s)Linked toIllnesses(if any)
+    TotalCaseCount
+    InvestigationStatus
+    Outbreak/EventStatus
+    RecallInitiated
+    FDATracebackInitiated
+    FDAInspectionInitiated
+    FDASamplingInitiated
+    """
+
+    # Testing the expected output of metadata when the data has been
+    # unpacked
+    assert expected_output in output
+
+    # Creating another instance of the Data_Wrangler class
+    new_data_wrangler: Data_Wrangler = Data_Wrangler(path = path)
+
+    # Initializing another StringIO to catch print statements
+    new_f: io.StringIO = io.StringIO()
+    with redirect_stdout(new_f):
+        new_data_wrangler.metadata()
+
+    # Getting the printed output when the data hasn't been unpacked 
+    output: str = new_f.getvalue()
+
+    # Testing the expected output of metadata when the data has not been
+    # unpacked
+    assert 'Please unpack the data before trying to read the metadata.' in output
+
 
     

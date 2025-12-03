@@ -22,7 +22,7 @@ class Data_Wrangler:
 
     Methods
     -------
-    - read_file() -> pd.DataFrame
+    - _read_file() -> pd.DataFrame
     - unpack_data() -> Dict[str, pd.DataFrame]
     """
     def __init__(self, path: str) -> None:
@@ -60,7 +60,7 @@ class Data_Wrangler:
         return self._is_data_unpacked
     
     @is_data_unpacked.setter
-    def path(self, flag: int) -> None:
+    def is_data_unpacked(self, flag: int) -> None:
         if isinstance(flag, int):
             if flag == 0 or flag == 1:
                 self._is_data_unpacked = flag
@@ -100,7 +100,7 @@ class Data_Wrangler:
     @property
     def tables(self) -> list[pd.DataFrame]:
         """Values (tables) of the dictionary holding the unpacked JSON data."""
-        return self._keys
+        return self._tables
     
     @tables.setter
     def tables(self, tables: list[pd.DataFrame]) -> None:
@@ -119,7 +119,7 @@ class Data_Wrangler:
     
     @num_entries.setter
     def num_entries(self, num_entries: int) -> None:
-        if isinstance(num_entries, str):
+        if isinstance(num_entries, int):
             self._num_entries = num_entries
         else:
             raise TypeError('The num_entries param must be a int.')
@@ -132,8 +132,8 @@ class Data_Wrangler:
     @scraped_data.setter
     def scraped_data(self, scraped_data: dict[str, pd.DataFrame]) -> None:
         if isinstance(scraped_data, dict):            
-            for item in scraped_data:
-                if not isinstance(item, pd.DataFrame):
+            for value in scraped_data.values():
+                if not isinstance(value, pd.DataFrame):
                     raise TypeError('Each item in tables must be a pd.DataFrame.')  
             self._scraped_data = scraped_data
         else:
@@ -146,7 +146,7 @@ class Data_Wrangler:
 
         Return
         ------
-        - fda_tables_unpacked (pd.DataFrame): an dictionary with 7 records,
+        - fda_tables_unpacked (pd.DataFrame): an pd.DataFrame with 7 records,
             where each record is a pair containing an FDA table name and 
             its associated data
         """
@@ -208,7 +208,7 @@ class Data_Wrangler:
             'entry key is a table name as a string and each',
             'value is the table data as a pd.DataFrame.'
         ]
-        self.keys: list[str] = fda_tables.keys()
+        self.keys: list[str] = list(fda_tables.keys())
         self.tables: list[pd.DataFrame] = list(fda_tables.values())
         self.num_entries: int = len(self.keys)
         self.scraped_data: dict[str, pd.DataFrame] = fda_tables
