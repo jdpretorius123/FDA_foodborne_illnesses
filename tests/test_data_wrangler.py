@@ -63,6 +63,9 @@ import io
 from io import StringIO
 from contextlib import redirect_stdout
 
+# re is needed for regex expressions
+import re
+
 def test_path() -> None:
     """
     Test path.
@@ -317,6 +320,18 @@ def test_metadata() -> None:
     FDASamplingInitiated
     """
 
+    # Splitting the expected output across all newline character instances
+    expected_output_list: list[str] = expected_output.split('\n')
+    
+    # Stripping all unnecessary white space from the expected output lines
+    expected_output_list = [line.rstrip().lstrip() for line in expected_output_list]
+
+    # Joining the expected output elements by the newline character 
+    expected_output = '\n'.join(expected_output_list)
+
+    # Removing only the newline character at the beginning of the expected output
+    expected_output = expected_output.lstrip('\n')
+
     # Testing the expected output of metadata when the data has been
     # unpacked
     assert expected_output in output
@@ -324,17 +339,18 @@ def test_metadata() -> None:
     # Creating another instance of the Data_Wrangler class
     new_data_wrangler: Data_Wrangler = Data_Wrangler(path = path)
 
-    # Initializing another StringIO to catch print statements
-    new_f: io.StringIO = io.StringIO()
-    with redirect_stdout(new_f):
+    # Initializing another StringIO to catch print statements indicating the data
+    # has not been unpacked
+    unpacked_f: io.StringIO = io.StringIO()
+    with redirect_stdout(unpacked_f):
         new_data_wrangler.metadata()
 
     # Getting the printed output when the data hasn't been unpacked 
-    output: str = new_f.getvalue()
+    unpacked_output: str = unpacked_f.getvalue()
 
     # Testing the expected output of metadata when the data has not been
     # unpacked
-    assert 'Please unpack the data before trying to read the metadata.' in output
+    assert 'Please unpack the data before trying to read the metadata.' in unpacked_output
 
 
     
